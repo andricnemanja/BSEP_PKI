@@ -1,0 +1,69 @@
+<div>
+    <div>
+        <h1>Create certificate</h1>
+        <form (submit)="onSubmit()">
+            <div>
+                <label>Choose type of the certificate:</label><br>
+                <input type="radio" id="self-signed" name="certificate_type" value="self-signed" [(ngModel)]="certificateType"/>
+                <label for="self-signed">Self-signed</label><br>
+                <input type="radio" id="intermediary" name="certificate_type" value="intermediary" [(ngModel)]="certificateType"/>
+                <label for="intermediary">Intermediary</label><br>
+                <input type="radio" id="end-entity" name="certificate_type" value="end-entity" [(ngModel)]="certificateType"/>
+                <label for="end-entity">End-entity</label>
+            </div>
+            <div>
+                <label>Choose the starting date and time of your certificate:</label> <br>
+                <input type="date" name="date" [(ngModel)]="startDate">
+                <input type="time" name="time" [(ngModel)]="startTime">
+            </div>
+            <div *ngIf="certificateType != 'self-signed'">
+                <label>Choose the issuer:</label><br>
+                <select>
+                    <option></option>
+                </select>
+                <!--padajuca lista sa ucitanim mogucim CA-->
+            </div>
+            <div>
+                <label>Extensions that are included:</label><br>
+                <input type="checkbox" id="basicConstraint" name="basicConstraint" onclick="return false;" checked>
+                <label for="basicConstraint">Basic Constraint</label><br>
+                <input type="checkbox" id="authorityKeyIdentifier" name="authorityKeyIdentifier" onclick="return false;" checked>
+                <label for="authorityKeyIdentifier">Authority Key Identifier</label>
+            </div>
+            <div>
+                <label>Add more extensions for certificate:</label><br>
+                <label>Key Usage:</label><br>
+                    <input type="checkbox" id="digitalSignature" name="digitalSignature" [(ngModel)]="digitalSignature">
+                    <label for="digitalSignature">Digital Signature</label>
+                    <input type="checkbox" id="nonRepudiation" name="nonRepudiation" checked [(ngModel)]="nonRepudiation">
+                    <label for="nonRepudiation">Non Repudiation</label><br>
+                <label>Extended Key Usage:</label><br>
+                    <input type="checkbox" id="codeSigning" name="codeSigning" value="codeSigning" [(ngModel)]="codeSigning">
+                    <label for="codeSigning">Code Signing</label>
+                    <input type="checkbox" id="emailProtection" name="emailProtection" value="emailProtection" [(ngModel)]="emailProtection">
+                    <label for="emailProtection">Email Protection</label>
+            </div>
+            <div>
+                <label *ngIf="certificateType === 'self-signed'">Information for issuer and subject are the same</label><br>
+                <label>Enter informations about the subject:</label><br>
+                <label>Common name:</label>
+                <input type="text" name="commonName" [(ngModel)]="commonName"><br>
+                <label>Surname:</label>
+                <input type="text" name="surname" [(ngModel)]="surname"><br>
+                <label>Givenname:</label>
+                <input type="text" name="givenName" [(ngModel)]="givenName"><br>
+                <label>Organization:</label>
+                <input type="text" name="organization" [(ngModel)]="organization"><br>
+                <label>Organization unit:</label>
+                <input type="text" name="organizationUnit" [(ngModel)]="organizationUnit"><br>
+                <label>Country:</label>
+                <input type="text" name="country" [(ngModel)]="country"><br>
+                <label>Email:</label>
+                <input type="email" name="email" [(ngModel)]="email"><br>
+                <label>Password:</label>
+                <input type="password" name="password" [(ngModel)]="password">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
