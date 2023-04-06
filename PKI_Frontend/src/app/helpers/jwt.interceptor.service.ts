@@ -5,7 +5,6 @@ import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http'
 export class CredentialsInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     const newReq = req.clone({
-      withCredentials: true
     });
     return next.handle(newReq);
   }
