@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 
 @Entity
-@Table(name = "subjects")
+@Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Inheritance(strategy= InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="u_type", discriminatorType = DiscriminatorType.INTEGER)
@@ -16,7 +16,7 @@ public class User {
 
     @Id
     @Column(name = "id")
-    private Integer id;
+    private String id;
     @NotEmpty
     @NotNull
     @Column(name = "commonName", unique = false)
@@ -52,7 +52,7 @@ public class User {
     @Column(name = "certificatesSerialNumbers", unique = false)
     private ArrayList<String> certificatesSerialNumbers;
 
-    public User(Integer id, String commonName, String surname, String givenName, String organization, String organizationUnit,
+    public User(String id, String commonName, String surname, String givenName, String organization, String organizationUnit,
                    String country, String email, String password, ArrayList<String> certificatesSerialNumbers) {
         this.id = id;
         this.commonName = commonName;
@@ -69,11 +69,11 @@ public class User {
     public User() {
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

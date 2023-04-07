@@ -1,7 +1,7 @@
 export class CertificateParamsDTO {
   certificateType : String = "";
   notBefore: Date = new Date();
-  issuer : number = 0;
+  issuer : String = "";
   keyUsage : Array<String> = [];
   extendedKeyUsage: Array<String> = [];
   commonName : String = "";
