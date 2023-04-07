@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 export class AdminCertificatesComponent implements OnInit{
   public certificateType : String = "";
   public notBefore: Date = new Date();
-  public issuer : number = 0;
+  public issuer : String = "";
   public keyUsage : Array<String> = [];
   public extendedKeyUsage: Array<String> = [];
   public commonName : String = "";
@@ -43,6 +43,8 @@ export class AdminCertificatesComponent implements OnInit{
   }
 
   checkboxValues() {
+    this.keyUsage = [];
+    this.extendedKeyUsage = [];
     const digitalSignature = (this.digitalSignature) ? "digitalSignature" : "";
     const nonRepudiation = (this.nonRepudiation) ? "nonRepudiation" : "";
     this.keyUsage.push(digitalSignature, nonRepudiation);
@@ -73,12 +75,29 @@ export class AdminCertificatesComponent implements OnInit{
     }
 
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
+      this.resetInputs();
     });
 
   }
 
   sendCertificateParams(certificateParams : CertificateParamsDTO) : Observable<any> {
     return this.http.post<any>("http://localhost:8080/CertificateController/generateCertificate", certificateParams)
+  }
+
+  resetInputs() {
+    this.certificateType = "";
+    this.notBefore = new Date();
+    this.issuer = "";
+    this.keyUsage = [];
+    this.extendedKeyUsage = [];
+    this.commonName = "";
+    this.surname = "";
+    this.givenName = "";
+    this.organization = "";
+    this.organizationUnit = "";
+    this.country = "";
+    this.email = "";
+    this.password = "";
   }
 
   ngOnInit(){}
