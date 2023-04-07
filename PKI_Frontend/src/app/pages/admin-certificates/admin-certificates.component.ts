@@ -98,6 +98,10 @@ export class AdminCertificatesComponent implements OnInit{
     this.country = "";
     this.email = "";
     this.password = "";
+    this.digitalSignature = false;
+    this.nonRepudiation = false;
+    this.codeSigning = false;
+    this.emailProtection = false;
   }
 
   ngOnInit(){}

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 @Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Inheritance(strategy= InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="u_type", discriminatorType = DiscriminatorType.INTEGER)
 public class User {
 
     @Id
