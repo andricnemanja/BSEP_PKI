@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { CredentialsInterceptor} from './helpers/jwt.interceptor.service'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AdminCertificatesComponent } from './pages/admin-certificates/admin-certificates.component';
+import { AdminCertificatesComponent } from './pages/admin-certificates/admin-certificates.component'
 
 @NgModule({
   declarations: [
