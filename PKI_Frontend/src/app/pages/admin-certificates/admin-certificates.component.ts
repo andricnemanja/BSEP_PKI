@@ -75,8 +75,8 @@ export class AdminCertificatesComponent implements OnInit{
     }
 
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
-      this.resetInputs();
     });
+    this.resetInputs();
 
   }
 
