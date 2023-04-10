@@ -51,8 +51,13 @@ public class User {
     @Column(name = "certificatesSerialNumbers", unique = false)
     private ArrayList<String> certificatesSerialNumbers;
 
+    @NotEmpty
+    @NotNull
+    @Column(name = "role", unique = false)
+    private String role;
+
     public User(String id, String commonName, String surname, String givenName, String organization, String organizationUnit,
-                   String country, String email, String password, ArrayList<String> certificatesSerialNumbers) {
+                   String country, String email, String password, ArrayList<String> certificatesSerialNumbers, String role) {
         this.id = id;
         this.commonName = commonName;
         this.surname = surname;
@@ -63,6 +68,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.certificatesSerialNumbers = certificatesSerialNumbers;
+        this.role = role;
     }
 
     public User() {
@@ -146,5 +152,13 @@ public class User {
 
     public void setCertificatesSerialNumbers(ArrayList<String> certificatesSerialNumbers) {
         this.certificatesSerialNumbers = certificatesSerialNumbers;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

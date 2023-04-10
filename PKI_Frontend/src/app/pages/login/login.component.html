@@ -1,0 +1,17 @@
+<div>
+    <div>
+        <h1>Login</h1>
+        <form (submit)="onLogin()">
+            <label>Email:</label>
+            <input type="email" name="email" [(ngModel)]="loginData.email"><br>
+            <label>Password:</label>
+            <input type="password" name="password" [(ngModel)]="loginData.password">
+            <button type="submit">Login</button>
+        </form>
+
+        <h1>Logout</h1>
+        <form (submit)="onLogout()">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>

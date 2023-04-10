@@ -61,7 +61,11 @@
                 <label>Email:</label>
                 <input type="email" name="email" [(ngModel)]="email"><br>
                 <label>Password:</label>
-                <input type="password" name="password" [(ngModel)]="password">
+                <input type="password" name="password" [(ngModel)]="password"><br>
+                <select [(ngModel)]="selectedRole" [ngModelOptions]="{standalone: true}">
+                    <option selected disabled hidden value="">Choose role</option>
+                    <option *ngFor="let role of roles" [value]="role.role">{{role.role}}</option>
+                </select>
             </div>
             <button type="submit">Submit</button>
         </form>

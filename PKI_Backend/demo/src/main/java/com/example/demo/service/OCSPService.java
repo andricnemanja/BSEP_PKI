@@ -10,7 +10,11 @@ public class OCSPService {
     @Autowired
     private OCSPRepo ocspRepo;
 
-    public Boolean findBySerialNumber(String serialNumber) {
+    public OCSPObject findBySerialNumber(String serialNumber) {
+        return ocspRepo.findBySerialNumber(serialNumber);
+    }
+
+    public Boolean isRevoked(String serialNumber) {
         OCSPObject ocspObject = ocspRepo.findBySerialNumber(serialNumber);
         if(ocspObject.getRevoked())
         {
@@ -18,4 +22,5 @@ public class OCSPService {
         }
         return false;
     }
+
 }

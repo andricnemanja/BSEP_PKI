@@ -25,6 +25,7 @@ export class AdminCertificatesComponent implements OnInit{
   public country : String = "";
   public email : String = "";
   public password : String = "";
+  public role: String = "";
 
   public digitalSignature : boolean = false;
   public nonRepudiation : boolean = false;
@@ -33,13 +34,20 @@ export class AdminCertificatesComponent implements OnInit{
   public startDate : String = "";
   public startTime : String = "";
 
+  public roles = [
+    {id: "user", role: 'User'},
+    {id: "admin", role: 'Admin'},
+  ];
+  public selectedRole = "";
+
   public certificateParams : CertificateParamsDTO = new CertificateParamsDTO();
 
   constructor(private http: HttpClient) {}
   
   calculateDate() {
     const start = this.startDate + "T" + this.startTime;
-    this.notBefore = new Date(start);
+    
+    this.certificateParams.notBefore = new Date(start);
   }
 
   checkboxValues() {
@@ -71,10 +79,17 @@ export class AdminCertificatesComponent implements OnInit{
       organizationUnit : this.organizationUnit,
       country : this.country,
       email : this.email,
-      password : this.password
+      password : this.password,
+      role : this.role
+    }
+
+    var userID = localStorage.getItem("UserID");
+    if(userID != null){
+      this.certificateParams.issuer = userID;
     }
 
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
+
     });
     this.resetInputs();
 
@@ -98,12 +113,15 @@ export class AdminCertificatesComponent implements OnInit{
     this.country = "";
     this.email = "";
     this.password = "";
+    this.role = "";
     this.digitalSignature = false;
     this.nonRepudiation = false;
     this.codeSigning = false;
     this.emailProtection = false;
   }
 
-  ngOnInit(){}
+  ngOnInit(){
+
+  }
 
 }

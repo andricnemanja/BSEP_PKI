@@ -12,4 +12,5 @@ export class CertificateParamsDTO {
   country : String = "";
   email : String = "";
   password : String = "";
+  role : String = "";
 }
