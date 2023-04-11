@@ -9,6 +9,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AdminCertificatesComponent } from './pages/admin-certificates/admin-certificates.component'
 import { LoginComponent } from './pages/login/login.component';
 import { IntermediaryFormComponent } from './pages/intermediary-form/intermediary-form.component';
+import { CertificatesDashboardComponent } from './pages/certificates-dashboard/certificates-dashboard/certificates-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { IntermediaryFormComponent } from './pages/intermediary-form/intermediar
     AdminCertificatesComponent,
     LoginComponent,
     IntermediaryFormComponent,
+    CertificatesDashboardComponent
     
   ],
   imports: [

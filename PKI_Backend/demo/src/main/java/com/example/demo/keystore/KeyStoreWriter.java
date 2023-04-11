@@ -40,7 +40,15 @@ public class KeyStoreWriter {
         } catch (CertificateException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            try {
+                keyStore.load(null, password);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
+            } catch (CertificateException ex) {
+                throw new RuntimeException(ex);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

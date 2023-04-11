@@ -5,6 +5,7 @@ import com.example.demo.dto.CertificateParamsDTO;
 import com.example.demo.model.Certificate;
 import com.example.demo.model.User;
 import com.example.demo.service.CertificateService;
+import com.example.demo.service.KeyStoreService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class CertificateController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private KeyStoreService keyStoreService;
 
     @Autowired
     private CertificateService certificateService;
