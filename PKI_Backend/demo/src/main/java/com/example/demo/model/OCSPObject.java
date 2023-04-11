@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Entity
 @Table(name = "ocspList")
@@ -19,9 +20,13 @@ public class OCSPObject {
     @Column(name = "revoked", unique = false)
     private Boolean revoked;
 
-    public OCSPObject(String serialNumber, Boolean revoked) {
+    @Column(name = "signedCertificates", unique = false)
+    private Set<String> signedCertificates;
+
+    public OCSPObject(String serialNumber, Boolean revoked, Set<String> signedCertificates) {
         this.serialNumber = serialNumber;
         this.revoked = revoked;
+        this.signedCertificates = signedCertificates;
     }
 
     public OCSPObject() {}
@@ -40,5 +45,13 @@ public class OCSPObject {
 
     public void setRevoked(Boolean revooked) {
         this.revoked = revooked;
+    }
+
+    public Set<String> getSignedCertificates() {
+        return signedCertificates;
+    }
+
+    public void setSignedCertificates(Set<String> signedCertificates) {
+        this.signedCertificates = signedCertificates;
     }
 }
