@@ -2,14 +2,14 @@ package com.example.demo.dto;
 
 public class CredentialsDTO {
     public String userID;
-    public String role;
+    public String email;
 
     public CredentialsDTO(){
 
     }
-    public CredentialsDTO(String userID, String role){
+    public CredentialsDTO(String userID, String email){
         this.userID = userID;
-        this.role = role;
+        this.email = email;
     }
 
     public String getUserID() {
@@ -20,11 +20,11 @@ public class CredentialsDTO {
         this.userID = userID;
     }
 
-    public String getRole() {
-        return role;
+    public String getEmail() {
+        return email;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
