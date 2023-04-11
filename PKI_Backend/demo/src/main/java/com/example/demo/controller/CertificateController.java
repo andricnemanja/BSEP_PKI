@@ -5,6 +5,7 @@ import com.example.demo.model.Issuer;
 import com.example.demo.model.Subject;
 import com.example.demo.model.User;
 import com.example.demo.service.CertificateService;
+import com.example.demo.service.KeyStoreService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Utils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -32,6 +33,9 @@ public class CertificateController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private KeyStoreService keyStoreService;
 
     @Autowired
     private CertificateService certificateService;
