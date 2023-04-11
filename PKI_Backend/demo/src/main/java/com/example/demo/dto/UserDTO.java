@@ -3,13 +3,7 @@ package com.example.demo.dto;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class CertificateParamsDTO {
-    public String certificateType;
-    public Date notBefore;
-    public String issuer;
-    public ArrayList<String> keyUsage;
-    public ArrayList<String> extendedKeyUsage;
-
+public class UserDTO {
     public String commonName;
     public String surname;
     public String givenName;
@@ -19,13 +13,11 @@ public class CertificateParamsDTO {
     public String email;
     public String password;
 
-    public CertificateParamsDTO(String certificateType, Date notBefore, String issuer, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage, String commonName,
-                                String surname, String givenName, String organization, String organizationUnit, String country, String email, String password) {
-        this.certificateType = certificateType;
-        this.notBefore = notBefore;
-        this.issuer = issuer;
-        this.keyUsage = keyUsage;
-        this.extendedKeyUsage = extendedKeyUsage;
+    public UserDTO() {
+
+    }
+    public UserDTO(String commonName, String surname, String givenName, String organization,
+                                String organizationUnit, String country, String email, String password) {
         this.commonName = commonName;
         this.surname = surname;
         this.givenName = givenName;
@@ -34,48 +26,6 @@ public class CertificateParamsDTO {
         this.country = country;
         this.email = email;
         this.password = password;
-    }
-
-    public CertificateParamsDTO() {}
-
-    public String getCertificateType() {
-        return certificateType;
-    }
-
-    public void setCertificateType(String certificateType) {
-        this.certificateType = certificateType;
-    }
-
-    public Date getNotBefore() {
-        return notBefore;
-    }
-
-    public void setNotBefore(Date notBefore) {
-        this.notBefore = notBefore;
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(String issuer) {
-        this.issuer = issuer;
-    }
-
-    public ArrayList<String> getKeyUsage() {
-        return keyUsage;
-    }
-
-    public void setKeyUsage(ArrayList<String> keyUsage) {
-        this.keyUsage = keyUsage;
-    }
-
-    public ArrayList<String> getExtendedKeyUsage() {
-        return extendedKeyUsage;
-    }
-
-    public void setExtendedKeyUsage(ArrayList<String> extendedKeyUsage) {
-        this.extendedKeyUsage = extendedKeyUsage;
     }
 
     public String getCommonName() {

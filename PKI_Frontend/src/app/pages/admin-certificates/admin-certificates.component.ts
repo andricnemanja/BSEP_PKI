@@ -1,9 +1,10 @@
 import { Component, NgModule, OnInit } from '@angular/core';
 import { networkInterfaces } from 'os';
 import { CertificateParamsDTO } from 'src/app/DTOs/certificateParamsDTO';
-import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
 import { runInThisContext } from 'vm';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { CertificateInfoDTO } from 'src/app/DTOs/certificateInfoDTO';
 
 @Component({
   selector: 'app-admin-certificates',
@@ -25,7 +26,6 @@ export class AdminCertificatesComponent implements OnInit{
   public country : String = "";
   public email : String = "";
   public password : String = "";
-  public role: String = "";
 
   public digitalSignature : boolean = false;
   public nonRepudiation : boolean = false;
@@ -34,13 +34,10 @@ export class AdminCertificatesComponent implements OnInit{
   public startDate : String = "";
   public startTime : String = "";
 
-  public roles = [
-    {id: "user", role: 'User'},
-    {id: "admin", role: 'Admin'},
-  ];
-  public selectedRole = "";
-
   public certificateParams : CertificateParamsDTO = new CertificateParamsDTO();
+
+  public certificateInfoDTOs : Array<CertificateInfoDTO> = [];
+  public selectedSerialNumber : String = "";
 
   constructor(private http: HttpClient) {}
   
@@ -69,7 +66,7 @@ export class AdminCertificatesComponent implements OnInit{
     this.certificateParams = {
       certificateType : this.certificateType,
       notBefore : this.notBefore,
-      issuer : this.issuer,
+      issuer : this.selectedSerialNumber,
       keyUsage : this.keyUsage,
       extendedKeyUsage : this.extendedKeyUsage,
       commonName : this.commonName,
@@ -79,15 +76,9 @@ export class AdminCertificatesComponent implements OnInit{
       organizationUnit : this.organizationUnit,
       country : this.country,
       email : this.email,
-      password : this.password,
-      role : this.role
+      password : this.password
     }
-
-    var userID = localStorage.getItem("UserID");
-    if(userID != null){
-      this.certificateParams.issuer = userID;
-    }
-
+    
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
 
     });
@@ -98,6 +89,19 @@ export class AdminCertificatesComponent implements OnInit{
   sendCertificateParams(certificateParams : CertificateParamsDTO) : Observable<any> {
     return this.http.post<any>("http://localhost:8080/CertificateController/generateCertificate", certificateParams)
   }
+
+  /*getCertificatesBySubjectEmail(subjectEmail : string){
+    
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("email", subjectEmail);
+
+    return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/email", { params: queryParams } )
+  }*/
+
+  getAllCertificates(){
+    return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/getAll")
+  }
+
 
   resetInputs() {
     this.certificateType = "";
@@ -113,7 +117,6 @@ export class AdminCertificatesComponent implements OnInit{
     this.country = "";
     this.email = "";
     this.password = "";
-    this.role = "";
     this.digitalSignature = false;
     this.nonRepudiation = false;
     this.codeSigning = false;
@@ -121,7 +124,19 @@ export class AdminCertificatesComponent implements OnInit{
   }
 
   ngOnInit(){
+    /* ZA ULOGOVANOG KORISNIKA NJEGOVI SERTIFIKATI KOJIMA MOZE DA POTPISUJE
+    let subjectEmail = localStorage.getItem("email");
+    if(subjectEmail){
 
+      this.getCertificatesBySubjectEmail(subjectEmail).subscribe(res => {
+        this.certificateInfoDTOs = res;
+      });
+    
+    }
+    */
+    this.getAllCertificates().subscribe(res => {
+      this.certificateInfoDTOs = res;
+    });
   }
 
 }

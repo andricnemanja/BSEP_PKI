@@ -17,11 +17,14 @@
                 <input type="time" name="time" [(ngModel)]="startTime">
             </div>
             <div *ngIf="certificateType != 'self-signed'">
-                <label>Choose the issuer:</label><br>
-                <select>
-                    <option></option>
+                <select [(ngModel)]="selectedSerialNumber" [ngModelOptions]="{standalone: true}">
+                    <option selected disabled hidden value="">Choose the issuer</option>
+                    <option *ngFor="let certificateInfoDTO of certificateInfoDTOs" [value]="certificateInfoDTO.serialNumber">
+                        {{certificateInfoDTO.commonName}} 
+                        {{certificateInfoDTO.organization}} 
+                        {{certificateInfoDTO.subjectEmail}}
+                    </option>
                 </select>
-                <!--padajuca lista sa ucitanim mogucim CA-->
             </div>
             <div>
                 <label>Extensions that are included:</label><br>
@@ -62,10 +65,6 @@
                 <input type="email" name="email" [(ngModel)]="email"><br>
                 <label>Password:</label>
                 <input type="password" name="password" [(ngModel)]="password"><br>
-                <select [(ngModel)]="selectedRole" [ngModelOptions]="{standalone: true}">
-                    <option selected disabled hidden value="">Choose role</option>
-                    <option *ngFor="let role of roles" [value]="role.role">{{role.role}}</option>
-                </select>
             </div>
             <button type="submit">Submit</button>
         </form>
