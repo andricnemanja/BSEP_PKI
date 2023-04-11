@@ -36,15 +36,16 @@ public class Certificate {
     @Column(name = "endDate", unique = false)
     private Date endDate;
     @Column(name = "keyUsage", unique = false)
-    public ArrayList<String> keyUsage;
+    private ArrayList<String> keyUsage;
     @Column(name = "extendedKeyUsage", unique = false)
-    public ArrayList<String> extendedKeyUsage;
+    private ArrayList<String> extendedKeyUsage;
 
-    public Certificate() {
+    @Column(name = "revoked", unique = false)
+    private Boolean revoked;
 
-    }
-    public Certificate(BigInteger serialNumber, String subjectEmail, String issuerEmail,
-                       Date startDate, Date endDate, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage) {
+    public Certificate() {}
+
+    public Certificate(BigInteger serialNumber, String subjectEmail, String issuerEmail, Date startDate, Date endDate, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage, Boolean revoked) {
         this.serialNumber = serialNumber;
         this.subjectEmail = subjectEmail;
         this.issuerEmail = issuerEmail;
@@ -52,6 +53,7 @@ public class Certificate {
         this.endDate = endDate;
         this.keyUsage = keyUsage;
         this.extendedKeyUsage = extendedKeyUsage;
+        this.revoked = revoked;
     }
 
     public BigInteger getSerialNumber() {
@@ -108,5 +110,13 @@ public class Certificate {
 
     public void setExtendedKeyUsage(ArrayList<String> extendedKeyUsage) {
         this.extendedKeyUsage = extendedKeyUsage;
+    }
+
+    public Boolean getRevoked() {
+        return revoked;
+    }
+
+    public void setRevoked(Boolean revoked) {
+        this.revoked = revoked;
     }
 }

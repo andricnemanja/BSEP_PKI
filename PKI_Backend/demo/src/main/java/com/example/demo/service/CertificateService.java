@@ -1,10 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.CertificateParamsDTO;
-import com.example.demo.model.Certificate;
-import com.example.demo.model.Issuer;
-import com.example.demo.model.Subject;
-import com.example.demo.model.User;
+import com.example.demo.model.*;
 import com.example.demo.repo.CertificateRepository;
 import com.example.demo.utils.Utils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -33,6 +30,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -40,9 +38,6 @@ public class CertificateService {
 
     @Autowired
     private Utils utils;
-
-    @Autowired
-    private OCSPService ocspService;
 
     @Autowired
     private UserService userService;
@@ -115,7 +110,8 @@ public class CertificateService {
                 startDate,
                 endDate,
                 certificateParamsDTO.keyUsage,
-                certificateParamsDTO.extendedKeyUsage
+                certificateParamsDTO.extendedKeyUsage,
+                false
         ));
 
         return certificate;
@@ -195,7 +191,8 @@ public class CertificateService {
                 startDate,
                 endDate,
                 certificateParamsDTO.keyUsage,
-                certificateParamsDTO.extendedKeyUsage
+                certificateParamsDTO.extendedKeyUsage,
+                false
         ));
 
         return certificate;
@@ -249,9 +246,9 @@ public class CertificateService {
     public X509Certificate generateCertificate(Subject subject, Issuer issuer, Date startDate, Date endDate){
 
         BigInteger serialNumber = utils.getRandomBigInteger();
-        while(ocspService.findBySerialNumber(serialNumber.toString()) != null){
-            serialNumber = utils.getRandomBigInteger();
-        }
+//        while(ocspService.findBySerialNumber(serialNumber.toString()) != null){
+//            serialNumber = utils.getRandomBigInteger();
+//        } TODO
 
         try {
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
@@ -292,6 +289,13 @@ public class CertificateService {
 
     public ArrayList<Certificate> getAll(){
         return certificateRepository.getAll();
+    }
+
+    public void revokeCertificate(String serialNumber) {
+        BigInteger sN = new BigInteger(serialNumber);
+        Certificate certificate = certificateRepository.getBySerialNumber(sN);
+        certificate.setRevoked(true);
+        certificateRepository.save(certificate);
     }
 
 }
