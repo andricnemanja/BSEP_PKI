@@ -8,7 +8,7 @@ import { CertificatesDashboardComponent } from './pages/certificates-dashboard/c
 const routes: Routes = [
   { path: 'adminCertificates', component: AdminCertificatesComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: CertificatesDashboardComponent }
+  { path: 'dashboard/:id', component: CertificatesDashboardComponent }
   
 ];
 
