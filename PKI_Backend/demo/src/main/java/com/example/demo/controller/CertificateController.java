@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.KeyPairGenerator;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
@@ -50,7 +51,6 @@ public class CertificateController {
                 break;
             default:
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
-
         }
 
         if(certificate != null) {

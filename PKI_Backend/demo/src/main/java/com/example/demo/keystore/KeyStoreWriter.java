@@ -42,6 +42,7 @@ public class KeyStoreWriter {
         } catch (FileNotFoundException e) {
             try {
                 keyStore.load(null, password);
+                //saveKeyStore(fileName, password);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             } catch (NoSuchAlgorithmException ex) {
