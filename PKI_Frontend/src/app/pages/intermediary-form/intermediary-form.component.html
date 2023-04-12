@@ -1,7 +1,18 @@
 <div>
     <div>
         <h1>Create certificate</h1>
+        {{error}}<br><br>
         <form (submit)="onSubmit()">
+            <div *ngIf="certificateType != 'self-signed'">
+                <select [(ngModel)]="selectedSerialNumber" [ngModelOptions]="{standalone: true}">
+                    <option selected disabled hidden value="">Choose the issuer</option>
+                    <option *ngFor="let certificateInfoDTO of certificateInfoDTOs" [value]="certificateInfoDTO.serialNumber">
+                        {{certificateInfoDTO.commonName}} 
+                        {{certificateInfoDTO.organization}} 
+                        {{certificateInfoDTO.subjectEmail}}
+                    </option>
+                </select>
+            </div>
             <div>
                 <label>Choose the starting date and time of your certificate:</label> <br>
                 <input type="date" name="date" [(ngModel)]="startDate">

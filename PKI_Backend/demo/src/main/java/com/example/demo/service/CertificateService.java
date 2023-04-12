@@ -1,16 +1,22 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.CertificateParamsDTO;
-import com.example.demo.model.*;
+import com.example.demo.model.Certificate;
+import com.example.demo.model.Issuer;
+import com.example.demo.model.Subject;
+import com.example.demo.model.User;
 import com.example.demo.repo.CertificateRepository;
 import com.example.demo.utils.Utils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
@@ -21,16 +27,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.cert.X509Extension;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -96,7 +99,8 @@ public class CertificateService {
         Date startDate = certificateParamsDTO.notBefore;
         Date endDate = DateUtils.addYears(startDate, 10);
 
-        certificate = generateCertificate(subject, issuer, startDate, endDate);
+        certificate = generateCertificate(subject, issuer, startDate, endDate, false,
+                certificateParamsDTO.keyUsage, certificateParamsDTO.extendedKeyUsage);
         subjectUser.getCertificatesSerialNumbers().add(
                 certificate.getSerialNumber().toString()
         );
@@ -154,7 +158,6 @@ public class CertificateService {
         PublicKey publicKeyIssuer = keyPairIssuer.getPublic();
 
         X500Name x500NameIssuer;
-        System.out.print("\n\n\n" + certificateParamsDTO.issuer + "\n\n\n");
         Certificate c = certificateRepository.getBySerialNumber(new BigInteger(certificateParamsDTO.issuer));
         User issuerUser = userService.findByEmail(c.getSubjectEmail());
 
@@ -168,7 +171,6 @@ public class CertificateService {
         issuerBuilder.addRDN(BCStyle.E, issuerUser.getEmail());
         x500NameIssuer = issuerBuilder.build();
 
-
         // KREIRANJE SERTIFIKATA
         X509Certificate certificate;
 
@@ -177,7 +179,8 @@ public class CertificateService {
         Date startDate = certificateParamsDTO.notBefore;
         Date endDate = DateUtils.addYears(startDate, 5);
 
-        certificate = generateCertificate(subject, issuer, startDate, endDate);
+        certificate = generateCertificate(subject, issuer, startDate, endDate, false,
+                certificateParamsDTO.keyUsage, certificateParamsDTO.extendedKeyUsage);
         subjectUser.getCertificatesSerialNumbers().add(
                 certificate.getSerialNumber().toString()
         );
@@ -222,7 +225,8 @@ public class CertificateService {
         PublicKey publicKeyIssuer = keyPairIssuer.getPublic();
 
         X500Name x500NameIssuer;
-        User issuerUser = userService.findById(certificateParamsDTO.issuer);
+        Certificate c = certificateRepository.getBySerialNumber(new BigInteger(certificateParamsDTO.issuer));
+        User issuerUser = userService.findByEmail(c.getSubjectEmail());
 
         X500NameBuilder issuerBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         issuerBuilder.addRDN(BCStyle.CN, issuerUser.getCommonName());
@@ -240,15 +244,17 @@ public class CertificateService {
         Date startDate = certificateParamsDTO.notBefore;
         Date endDate = DateUtils.addYears(startDate, 1);
 
-        return generateCertificate(subject, issuer, startDate, endDate);
+        return generateCertificate(subject, issuer, startDate, endDate, true,
+                certificateParamsDTO.keyUsage, certificateParamsDTO.extendedKeyUsage);
     }
 
-    public X509Certificate generateCertificate(Subject subject, Issuer issuer, Date startDate, Date endDate){
+    public X509Certificate generateCertificate(Subject subject, Issuer issuer, Date startDate, Date endDate, boolean isEndEntity,
+                                               ArrayList<String> keyUsages, ArrayList<String> extendedKeyUsages){
 
         BigInteger serialNumber = utils.getRandomBigInteger();
-//        while(ocspService.findBySerialNumber(serialNumber.toString()) != null){
-//            serialNumber = utils.getRandomBigInteger();
-//        } TODO
+        while(certificateRepository.getBySerialNumber(serialNumber) != null){
+            serialNumber = utils.getRandomBigInteger();
+        }
 
         try {
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
@@ -262,6 +268,41 @@ public class CertificateService {
                     endDate,
                     subject.getX500Name(),
                     subject.getPublicKey());
+
+            //********************************************************************************************************************
+
+            // DODAVANJE Extensions-A
+            certGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(!isEndEntity)); // FALSE AKO JE END-ENTITY
+            AuthorityKeyIdentifier authorityKeyIdentifier = new JcaX509ExtensionUtils().createAuthorityKeyIdentifier(subject.getPublicKey());
+
+            certGen.addExtension(X509Extensions.AuthorityKeyIdentifier, true, authorityKeyIdentifier);
+
+            // DODAVANJE KeyUsage-A
+            if(keyUsages.contains("digitalSignature") && keyUsages.contains("nonRepudiation")){
+                KeyUsage usageDigitalSignature = new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation);
+                certGen.addExtension(X509Extensions.KeyUsage, true, usageDigitalSignature);
+            }else if(keyUsages.contains("digitalSignature")){
+                KeyUsage usageDigitalSignature = new KeyUsage(KeyUsage.digitalSignature);
+                certGen.addExtension(X509Extensions.KeyUsage, true, usageDigitalSignature);
+            }else if(keyUsages.contains("nonRepudiation")) {
+                KeyUsage usageNonRepudiation = new KeyUsage(KeyUsage.nonRepudiation);
+                certGen.addExtension(X509Extensions.KeyUsage, true, usageNonRepudiation);
+            }
+
+            // DODAVANJE ExtendedKeyUsage-A
+            if(extendedKeyUsages.contains("codeSigning") && extendedKeyUsages.contains("emailProtection")){
+                ExtendedKeyUsage extendedKeyUsageCodeSigning = new ExtendedKeyUsage(new KeyPurposeId[] { KeyPurposeId.id_kp_codeSigning, KeyPurposeId.id_kp_emailProtection });
+                certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, extendedKeyUsageCodeSigning);
+            }else if(extendedKeyUsages.contains("codeSigning")){
+                ExtendedKeyUsage extendedKeyUsageEmailProtection = new ExtendedKeyUsage(KeyPurposeId.id_kp_codeSigning);
+                certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, extendedKeyUsageEmailProtection);
+            }else if(extendedKeyUsages.contains("emailProtection")) {
+                ExtendedKeyUsage extendedKeyUsageEmailProtection = new ExtendedKeyUsage(KeyPurposeId.id_kp_emailProtection);
+                certGen.addExtension(X509Extensions.ExtendedKeyUsage, true, extendedKeyUsageEmailProtection);
+            }
+
+            //********************************************************************************************************************
+
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
@@ -279,6 +320,10 @@ public class CertificateService {
             e.printStackTrace();
         } catch (CertificateException e) {
             e.printStackTrace();
+        } catch (CertIOException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }

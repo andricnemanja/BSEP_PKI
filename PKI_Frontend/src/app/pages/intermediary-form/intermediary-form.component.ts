@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
+import { CertificateInfoDTO } from 'src/app/DTOs/certificateInfoDTO';
 import { CertificateParamsDTO } from 'src/app/DTOs/certificateParamsDTO';
 
 @Component({
@@ -32,6 +33,11 @@ export class IntermediaryFormComponent implements OnInit{
 
   public certificateParams : CertificateParamsDTO = new CertificateParamsDTO();
 
+  public certificateInfoDTOs : Array<CertificateInfoDTO> = [];
+  public selectedSerialNumber : String = "";
+
+  public error : String = "";
+
   constructor(private http: HttpClient) {}
 
   calculateDate() {
@@ -59,7 +65,7 @@ export class IntermediaryFormComponent implements OnInit{
     this.certificateParams = {
       certificateType : this.certificateType,
       notBefore : this.notBefore,
-      issuer : this.issuer,
+      issuer : this.selectedSerialNumber,
       keyUsage : this.keyUsage,
       extendedKeyUsage : this.extendedKeyUsage,
       commonName : this.commonName,
@@ -69,8 +75,7 @@ export class IntermediaryFormComponent implements OnInit{
       organizationUnit : this.organizationUnit,
       country : this.country,
       email : this.email,
-      password : this.password,
-      role : "user"
+      password : this.password
     }
 
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
@@ -80,7 +85,15 @@ export class IntermediaryFormComponent implements OnInit{
   }
 
   sendCertificateParams(certificateParams : CertificateParamsDTO) : Observable<any> {
-    return this.http.post<any>("", certificateParams)
+    return this.http.post<any>("http://localhost:8080/CertificateController/generateCertificate", certificateParams)
+  }
+
+  getCertificatesBySubjectEmail(subjectEmail : string){
+    
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append("email", subjectEmail);
+
+    return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/email", { params: queryParams } )
   }
 
   resetInputs() {
@@ -101,8 +114,20 @@ export class IntermediaryFormComponent implements OnInit{
     this.nonRepudiation = false;
     this.codeSigning = false;
     this.emailProtection = false;
+    this.error = "";
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    let subjectEmail = localStorage.getItem("email");
+    if(subjectEmail){
+
+      this.getCertificatesBySubjectEmail(subjectEmail).subscribe(res => {
+        this.certificateInfoDTOs = res;
+      });
+    
+    }else{
+      this.error = "You have to be logged in!";
+    }
+  }
 
 }
