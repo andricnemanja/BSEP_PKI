@@ -90,14 +90,6 @@ export class AdminCertificatesComponent implements OnInit{
     return this.http.post<any>("http://localhost:8080/CertificateController/generateCertificate", certificateParams)
   }
 
-  /*getCertificatesBySubjectEmail(subjectEmail : string){
-    
-    let queryParams = new HttpParams();
-    queryParams = queryParams.append("email", subjectEmail);
-
-    return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/email", { params: queryParams } )
-  }*/
-
   getAllCertificates(){
     return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/getAll")
   }
@@ -124,16 +116,6 @@ export class AdminCertificatesComponent implements OnInit{
   }
 
   ngOnInit(){
-    /* ZA ULOGOVANOG KORISNIKA NJEGOVI SERTIFIKATI KOJIMA MOZE DA POTPISUJE
-    let subjectEmail = localStorage.getItem("email");
-    if(subjectEmail){
-
-      this.getCertificatesBySubjectEmail(subjectEmail).subscribe(res => {
-        this.certificateInfoDTOs = res;
-      });
-    
-    }
-    */
     this.getAllCertificates().subscribe(res => {
       this.certificateInfoDTOs = res;
     });
