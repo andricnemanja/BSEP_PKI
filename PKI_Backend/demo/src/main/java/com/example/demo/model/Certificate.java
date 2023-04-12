@@ -21,6 +21,10 @@ public class Certificate {
     private BigInteger serialNumber;
     @NotEmpty
     @NotNull
+    @Column(name = "issuerSerialNumber", unique = false)
+    private String issuerSerialNumber;
+    @NotEmpty
+    @NotNull
     @Column(name = "subjectEmail", unique = false)
     private String subjectEmail;
     @NotEmpty
@@ -45,8 +49,9 @@ public class Certificate {
 
     public Certificate() {}
 
-    public Certificate(BigInteger serialNumber, String subjectEmail, String issuerEmail, Date startDate, Date endDate, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage, Boolean revoked) {
+    public Certificate(BigInteger serialNumber, String issuerSerialNumber, String subjectEmail, String issuerEmail, Date startDate, Date endDate, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage, Boolean revoked) {
         this.serialNumber = serialNumber;
+        this.issuerSerialNumber = issuerSerialNumber;
         this.subjectEmail = subjectEmail;
         this.issuerEmail = issuerEmail;
         this.startDate = startDate;
@@ -118,5 +123,13 @@ public class Certificate {
 
     public void setRevoked(Boolean revoked) {
         this.revoked = revoked;
+    }
+
+    public String getIssuerSerialNumber() {
+        return issuerSerialNumber;
+    }
+
+    public void setIssuerSerialNumber(String issuerSerialNumber) {
+        this.issuerSerialNumber = issuerSerialNumber;
     }
 }

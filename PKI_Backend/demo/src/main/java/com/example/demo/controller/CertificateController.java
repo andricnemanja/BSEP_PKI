@@ -6,6 +6,7 @@ import com.example.demo.model.Certificate;
 import com.example.demo.model.User;
 import com.example.demo.service.CertificateService;
 import com.example.demo.service.KeyStoreService;
+import com.example.demo.service.OCSPService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class CertificateController {
 
     @Autowired
     private CertificateService certificateService;
+
+    @Autowired
+    private OCSPService ocspService;
 
     @Autowired
     private Utils utils;
@@ -76,7 +80,8 @@ public class CertificateController {
             X509Certificate currCert = (X509Certificate)check;
 
             if(!certificate.getRevoked() && currCert.getBasicConstraints() > -1 &&
-                    certificate.getEndDate().getYear() - certificate.getStartDate().getYear() > 1) {
+                    certificate.getEndDate().getYear() - certificate.getStartDate().getYear() > 1 &&
+                    ocspService.isValid(certificate.getSerialNumber().toString())) {
 
                 CertificateDTO c = new CertificateDTO(certificate);
 

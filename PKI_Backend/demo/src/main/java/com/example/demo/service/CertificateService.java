@@ -108,6 +108,7 @@ public class CertificateService {
         userService.save(subjectUser);
         certificateRepository.save(new Certificate(
                 certificate.getSerialNumber(),
+                certificateParamsDTO.issuer,
                 subjectUser.getEmail(),
                 subjectUser.getEmail(),
                 startDate,
@@ -191,6 +192,7 @@ public class CertificateService {
         userService.save(subjectUser);
         certificateRepository.save(new Certificate(
                 certificate.getSerialNumber(),
+                certificateParamsDTO.issuer,
                 subjectUser.getEmail(),
                 issuerUser.getEmail(),
                 startDate,
@@ -276,6 +278,7 @@ public class CertificateService {
         userService.save(subjectUser);
         certificateRepository.save(new Certificate(
                 certificate.getSerialNumber(),
+                certificateParamsDTO.issuer,
                 subjectUser.getEmail(),
                 issuerUser.getEmail(),
                 startDate,
