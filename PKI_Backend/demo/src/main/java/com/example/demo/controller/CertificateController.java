@@ -72,14 +72,22 @@ public class CertificateController {
         ArrayList<CertificateDTO> certificateDtos = new ArrayList<>();
         for (Certificate certificate : certificateService.getBySubjectEmail(email)) {
 
-            CertificateDTO c = new CertificateDTO(certificate);
-            c.setCommonName(user.getCommonName());
-            c.setOrganization(user.getOrganization());
-            User issuer = userService.findByEmail(c.getIssuerEmail());
-            c.setIssuerCommonName(issuer.getCommonName());
-            c.setIssuerOrganization(issuer.getOrganization());
+            java.security.cert.Certificate check = keyStoreService.getCertificate(certificate.getSerialNumber().toString());
+            X509Certificate currCert = (X509Certificate)check;
 
-            certificateDtos.add(c);
+            if(!certificate.getRevoked() && currCert.getBasicConstraints() > -1 &&
+                    certificate.getEndDate().getYear() - certificate.getStartDate().getYear() > 1) {
+
+                CertificateDTO c = new CertificateDTO(certificate);
+
+                c.setCommonName(user.getCommonName());
+                c.setOrganization(user.getOrganization());
+                User issuer = userService.findByEmail(c.getIssuerEmail());
+                c.setIssuerCommonName(issuer.getCommonName());
+                c.setIssuerOrganization(issuer.getOrganization());
+
+                certificateDtos.add(c);
+            }
         }
 
         return new ResponseEntity(certificateDtos, HttpStatus.OK);
@@ -91,13 +99,17 @@ public class CertificateController {
         ArrayList<CertificateDTO> certificateDtos = new ArrayList<>();
         for (Certificate certificate : certificateService.getAll()) {
 
-            if(!certificate.getRevoked()) {
+            java.security.cert.Certificate check = keyStoreService.getCertificate(certificate.getSerialNumber().toString());
+            X509Certificate currCert = (X509Certificate)check;
+
+            if(!certificate.getRevoked() && currCert.getBasicConstraints() > -1 &&
+                    certificate.getEndDate().getYear() - certificate.getStartDate().getYear() > 1) {
+
                 User user = userService.findByEmail(certificate.getSubjectEmail());
 
                 CertificateDTO c = new CertificateDTO(certificate);
                 c.setCommonName(user.getCommonName());
                 c.setOrganization(user.getOrganization());
-
                 certificateDtos.add(c);
             }
         }

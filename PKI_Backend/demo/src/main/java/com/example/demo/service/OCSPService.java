@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.model.Certificate;
 import com.example.demo.model.OCSPObject;
+import com.example.demo.repo.CertificateRepository;
 import com.example.demo.repo.OCSPRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.Set;
 
 @Service
@@ -12,7 +15,7 @@ public class OCSPService {
     @Autowired
     private OCSPRepo ocspRepo;
     @Autowired
-    private CertificateService certificateService;
+    private CertificateRepository certificateRepository;
 
     public OCSPObject findBySerialNumber(String serialNumber) {
         return ocspRepo.findBySerialNumber(serialNumber);
@@ -40,7 +43,10 @@ public class OCSPService {
         CACertificate.setRevoked(true);
         ocspRepo.save(CACertificate);
 
-        certificateService.revokeCertificate(serialNumber); //TODO testirati
+        BigInteger sN = new BigInteger(serialNumber);
+        Certificate certificate = certificateRepository.getBySerialNumber(sN);
+        certificate.setRevoked(true);
+        certificateRepository.save(certificate);
 
         for(String sn: CACertificate.getSignedCertificates()){
             revokeCertificate(sn);
