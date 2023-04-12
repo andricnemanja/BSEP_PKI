@@ -4,14 +4,20 @@
 <div class="container mt-5">
     <h1 class="mb-5">Certificates:</h1>
     <div class="row">
-        <div class="col-4 certificate-card">
+        <div class="col-4 certificate-card" *ngFor="let cert of certificates">
             <div class="card-body">
-                <h3 class="certificate-name">Certificate Name</h3>
-                <p class="card-text"><b>Certificate type: </b></p>
-                <p class="card-text"><b>Issued by: </b></p>
-                <p class="card-text"><b>Issued to: </b></p>
-                <p class="card-text"><b>Valid from: </b> <b>to: </b></p>
-                <button class="btn btn-primary" (click)="downloadCertificate('949374937682')">Download</button>
+                <h3 class="certificate-name">{{cert.serialNumber}}</h3>
+                <p class="card-subtitle"><b>Issued by: </b></p>
+                <p class="card-field">Common Name (CN): {{cert.commonName}}</p>
+                <p class="card-field">Organization (O): {{cert.organization}}</p>
+                <p class="card-subtitle"><b>Issued to: </b></p>
+                <p class="card-field">Common Name (CN): {{cert.issuerCommonName}}</p>
+                <p class="card-field">Organization (O): {{cert.issuerOrganization}}</p>
+                <p class="card-text"><b>Valid from: </b>{{cert.startDate | date}}</p>
+                <p class="card-text"><b>Valid to: </b>{{cert.endDate | date}}</p>
+                <p class="card-subtitle"><b>Key usage: </b>{{cert.keyUsage}}</p>
+                <p class="card-subtitle"><b>Extended key usage: </b>{{cert.extendedKeyUsage}}</p>
+                <button class="btn btn-primary" (click)="downloadCertificate(cert.serialNumber)">Download</button>
             </div>
         </div>
     </div>

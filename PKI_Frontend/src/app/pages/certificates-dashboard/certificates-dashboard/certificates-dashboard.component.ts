@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CertificateService } from 'src/app/services/certificate-service';
 
 @Component({
   selector: 'app-certificates-dashboard',
@@ -10,13 +11,17 @@ import { ActivatedRoute } from '@angular/router';
 export class CertificatesDashboardComponent implements OnInit{
   
   private id: any;
+  certificates : any[] = [];
 
-  constructor(private _route: ActivatedRoute, private http: HttpClient){
+  constructor(private _route: ActivatedRoute, private certificateService: CertificateService, private http: HttpClient){
     this.id = this._route.snapshot.paramMap.get('id');
   }
 
 
   ngOnInit(): void {
+    this.certificateService.getCertificatesByUserEmail(this.id).subscribe(res => {
+      this.certificates = res;
+    });
   }
 
   public downloadCertificate(alias: string): void {

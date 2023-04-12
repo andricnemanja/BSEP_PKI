@@ -6,7 +6,7 @@ import { Certificate } from '../model/certificate';
 @Injectable({
   providedIn: 'root'
 })
-export class EquipmentService {
+export class CertificateService {
 
   apiHost: string = 'http://localhost:8080/';
   headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -17,8 +17,8 @@ export class EquipmentService {
     return this.http.get<[]>(this.apiHost + 'CertificateController/getAll' , {headers: this.headers});
   }
 
-  getAllEquipment(userEmail: string): Observable<Certificate[]> {
-    return this.http.get<Certificate[]>(this.apiHost + 'CertificateController/getAll/' + userEmail, {headers: this.headers});
+  getCertificatesByUserEmail(userEmail: string): Observable<any[]> {
+    return this.http.get<any[]>(this.apiHost + 'CertificateController/getBySubjectEmail/email?email=' + userEmail, {headers: this.headers});
   }
 
 }

@@ -75,6 +75,9 @@ public class CertificateController {
             CertificateDTO c = new CertificateDTO(certificate);
             c.setCommonName(user.getCommonName());
             c.setOrganization(user.getOrganization());
+            User issuer = userService.findByEmail(c.getIssuerEmail());
+            c.setIssuerCommonName(issuer.getCommonName());
+            c.setIssuerOrganization(issuer.getOrganization());
 
             certificateDtos.add(c);
 
@@ -96,7 +99,7 @@ public class CertificateController {
             c.setOrganization(user.getOrganization());
 
             certificateDtos.add(c);
-
+            
         }
 
         return new ResponseEntity(certificateDtos, HttpStatus.OK);
