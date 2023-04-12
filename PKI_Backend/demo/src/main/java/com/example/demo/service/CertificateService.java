@@ -47,6 +47,8 @@ public class CertificateService {
     @Autowired
     private UserService userService;
     @Autowired
+    private KeyStoreService keyStoreService;
+    @Autowired
     private CertificateRepository certificateRepository;
 
     public CertificateService() {
@@ -68,11 +70,10 @@ public class CertificateService {
             userService.save(subjectUser);
         }
 
-        // LOGIKA KLUCEVA I CUVANJE TREBA DA SE IMPLEMENTIRA OVO JE PRIVREMENO
+        // LOGIKA KLUCEVA
         KeyPair keyPairSubject = utils.generateKeyPair();
         PublicKey publicKeySubject = keyPairSubject.getPublic();
-
-        X500Name x500NameSubject;
+        PrivateKey privateKeySubject = keyPairSubject.getPrivate();
 
         X500NameBuilder subjectBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         subjectBuilder.addRDN(BCStyle.CN, subjectUser.getCommonName());
@@ -82,26 +83,18 @@ public class CertificateService {
         subjectBuilder.addRDN(BCStyle.OU, subjectUser.getOrganizationUnit());
         subjectBuilder.addRDN(BCStyle.C, subjectUser.getCountry());
         subjectBuilder.addRDN(BCStyle.E, subjectUser.getEmail());
-        x500NameSubject = subjectBuilder.build();
+        X500Name x500NameSubject = subjectBuilder.build();
 
-        // LOGIKA KLUCEVA I CUVANJE TREBA DA SE IMPLEMENTIRA OVO JE PRIVREMENO
-        KeyPair keyPairIssuer = utils.generateKeyPair();
-        PrivateKey privateKeyIssuer = keyPairIssuer.getPrivate();
-        PublicKey publicKeyIssuer = keyPairIssuer.getPublic();
-
-        X500Name x500NameIssuer;
-
-        x500NameIssuer = x500NameSubject;
+        X500Name x500NameIssuer = x500NameSubject;
 
         // KREIRANJE SERTIFIKATA
-        X509Certificate certificate;
 
         Subject subject = new Subject(publicKeySubject, x500NameSubject);
-        Issuer issuer = new Issuer(privateKeyIssuer, publicKeyIssuer, x500NameIssuer);
+        Issuer issuer = new Issuer(privateKeySubject, publicKeySubject, x500NameIssuer);
         Date startDate = certificateParamsDTO.notBefore;
         Date endDate = DateUtils.addYears(startDate, 10);
 
-        certificate = generateCertificate(subject, issuer, startDate, endDate);
+        X509Certificate certificate = generateCertificate(subject, issuer, startDate, endDate);
         subjectUser.getCertificatesSerialNumbers().add(
                 certificate.getSerialNumber().toString()
         );
@@ -117,6 +110,8 @@ public class CertificateService {
                 certificateParamsDTO.keyUsage,
                 certificateParamsDTO.extendedKeyUsage
         ));
+
+        keyStoreService.saveRootCertificate(certificate.getSerialNumber().toString(), privateKeySubject, certificate);
 
         return certificate;
     }
@@ -136,11 +131,10 @@ public class CertificateService {
             userService.save(subjectUser);
         }
 
-        // LOGIKA KLUCEVA I CUVANJE TREBA DA SE IMPLEMENTIRA OVO JE PRIVREMENO
+        // LOGIKA KLUCEVA SUBJECT
         KeyPair keyPairSubject = utils.generateKeyPair();
         PublicKey publicKeySubject = keyPairSubject.getPublic();
-
-        X500Name x500NameSubject;
+        PrivateKey privateKeySubject = keyPairSubject.getPrivate();
 
         X500NameBuilder subjectBuilder = new X500NameBuilder(BCStyle.INSTANCE);
         subjectBuilder.addRDN(BCStyle.CN, subjectUser.getCommonName());
@@ -150,14 +144,11 @@ public class CertificateService {
         subjectBuilder.addRDN(BCStyle.OU, subjectUser.getOrganizationUnit());
         subjectBuilder.addRDN(BCStyle.C, subjectUser.getCountry());
         subjectBuilder.addRDN(BCStyle.E, subjectUser.getEmail());
-        x500NameSubject = subjectBuilder.build();
+        X500Name x500NameSubject = subjectBuilder.build();
 
-        // LOGIKA KLUCEVA I CUVANJE TREBA DA SE IMPLEMENTIRA OVO JE PRIVREMENO
-        KeyPair keyPairIssuer = utils.generateKeyPair();
-        PrivateKey privateKeyIssuer = keyPairIssuer.getPrivate();
-        PublicKey publicKeyIssuer = keyPairIssuer.getPublic();
+        // LOGIKA KLUCEVA ISSUER
+        PrivateKey privateKeyIssuer = keyStoreService.getPrivateKey(certificateParamsDTO.issuer);
 
-        X500Name x500NameIssuer;
         System.out.print("\n\n\n" + certificateParamsDTO.issuer + "\n\n\n");
         Certificate c = certificateRepository.getBySerialNumber(new BigInteger(certificateParamsDTO.issuer));
         User issuerUser = userService.findByEmail(c.getSubjectEmail());
@@ -170,18 +161,16 @@ public class CertificateService {
         issuerBuilder.addRDN(BCStyle.OU, issuerUser.getOrganizationUnit());
         issuerBuilder.addRDN(BCStyle.C, issuerUser.getCountry());
         issuerBuilder.addRDN(BCStyle.E, issuerUser.getEmail());
-        x500NameIssuer = issuerBuilder.build();
+        X500Name x500NameIssuer = issuerBuilder.build();
 
 
         // KREIRANJE SERTIFIKATA
-        X509Certificate certificate;
-
         Subject subject = new Subject(publicKeySubject, x500NameSubject);
-        Issuer issuer = new Issuer(privateKeyIssuer, publicKeyIssuer, x500NameIssuer);
+        Issuer issuer = new Issuer(privateKeyIssuer, null, x500NameIssuer);
         Date startDate = certificateParamsDTO.notBefore;
         Date endDate = DateUtils.addYears(startDate, 5);
 
-        certificate = generateCertificate(subject, issuer, startDate, endDate);
+        X509Certificate certificate = generateCertificate(subject, issuer, startDate, endDate);
         subjectUser.getCertificatesSerialNumbers().add(
                 certificate.getSerialNumber().toString()
         );
@@ -198,15 +187,17 @@ public class CertificateService {
                 certificateParamsDTO.extendedKeyUsage
         ));
 
+        keyStoreService.saveCertificate(certificate.getSerialNumber().toString(), privateKeySubject, certificate, certificateParamsDTO.issuer);
+
         return certificate;
     }
 
     public X509Certificate endEntityCertificate(CertificateParamsDTO certificateParamsDTO){
-        // LOGIKA KLUCEVA I CUVANJE TREBA DA SE IMPLEMENTIRA OVO JE PRIVREMENO
+        // LOGIKA KLUCEVA
         KeyPair keyPairSubject = utils.generateKeyPair();
         PublicKey publicKeySubject = keyPairSubject.getPublic();
+        PrivateKey privateKeySubject = keyPairSubject.getPrivate();
 
-        X500Name x500NameSubject;
         User subjectUser = userService.findById(certificateParamsDTO.email);
 
         X500NameBuilder subjectBuilder = new X500NameBuilder(BCStyle.INSTANCE);
@@ -217,14 +208,11 @@ public class CertificateService {
         subjectBuilder.addRDN(BCStyle.OU, subjectUser.getOrganizationUnit());
         subjectBuilder.addRDN(BCStyle.C, subjectUser.getCountry());
         subjectBuilder.addRDN(BCStyle.E, subjectUser.getEmail());
-        x500NameSubject = subjectBuilder.build();
+        X500Name x500NameSubject = subjectBuilder.build();
 
-        // LOGIKA KLUCEVA I CUVANJE TREBA DA SE IMPLEMENTIRA OVO JE PRIVREMENO
-        KeyPair keyPairIssuer = utils.generateKeyPair();
-        PrivateKey privateKeyIssuer = keyPairIssuer.getPrivate();
-        PublicKey publicKeyIssuer = keyPairIssuer.getPublic();
+        // LOGIKA KLUCEVA
+        PrivateKey privateKeyIssuer = keyStoreService.getPrivateKey(certificateParamsDTO.issuer);
 
-        X500Name x500NameIssuer;
         User issuerUser = userService.findById(certificateParamsDTO.issuer);
 
         X500NameBuilder issuerBuilder = new X500NameBuilder(BCStyle.INSTANCE);
@@ -235,15 +223,19 @@ public class CertificateService {
         issuerBuilder.addRDN(BCStyle.OU, issuerUser.getOrganizationUnit());
         issuerBuilder.addRDN(BCStyle.C, issuerUser.getCountry());
         issuerBuilder.addRDN(BCStyle.E, issuerUser.getEmail());
-        x500NameIssuer = issuerBuilder.build();
+        X500Name x500NameIssuer = issuerBuilder.build();
 
         // KREIRANJE SERTIFIKATA
         Subject subject = new Subject(publicKeySubject, x500NameSubject);
-        Issuer issuer = new Issuer(privateKeyIssuer, publicKeyIssuer, x500NameIssuer);
+        Issuer issuer = new Issuer(privateKeyIssuer, null, x500NameIssuer);
         Date startDate = certificateParamsDTO.notBefore;
         Date endDate = DateUtils.addYears(startDate, 1);
 
-        return generateCertificate(subject, issuer, startDate, endDate);
+        X509Certificate certificate = generateCertificate(subject, issuer, startDate, endDate);
+
+        keyStoreService.saveCertificate(certificate.getSerialNumber().toString(), privateKeySubject, certificate, certificateParamsDTO.issuer);
+
+        return certificate;
     }
 
     public X509Certificate generateCertificate(Subject subject, Issuer issuer, Date startDate, Date endDate){

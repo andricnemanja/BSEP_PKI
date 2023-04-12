@@ -95,7 +95,7 @@ public class KeyStoreReader {
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return null;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (CertificateException e) {
@@ -129,7 +129,7 @@ public class KeyStoreReader {
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return null;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (CertificateException e) {
@@ -162,7 +162,7 @@ public class KeyStoreReader {
         } catch (NoSuchProviderException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return new Certificate[]{};
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (CertificateException e) {

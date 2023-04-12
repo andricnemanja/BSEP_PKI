@@ -33,13 +33,15 @@ public class KeyStoreService {
         keyStoreWriter.saveKeyStore(ROOT_KEYSTORE_PATH, ROOT_KEYSTORE_PASSWORD.toCharArray());
     }
 
-    public void saveCertificate(String alias, PrivateKey privateKey, Certificate certificate){
-        Certificate[] certificatesChain = keyStoreReader.getCertificateChain(NON_ROOT_KEYSTORE_PATH, NON_ROOT_KEYSTORE_PASSWORD, alias);
+    public void saveCertificate(String alias, PrivateKey privateKey, Certificate certificate, String issuerAlias){
+        Certificate[] certificatesChain = keyStoreReader.getCertificateChain(NON_ROOT_KEYSTORE_PATH, NON_ROOT_KEYSTORE_PASSWORD, issuerAlias);
         Certificate[] newCertificateChain = new Certificate[certificatesChain.length + 1];
 
         if(certificatesChain.length == 0){
-            Certificate rootCertificate = keyStoreReader.readCertificate(ROOT_KEYSTORE_PATH, NON_ROOT_KEYSTORE_PASSWORD, alias);
+            Certificate rootCertificate = keyStoreReader.readCertificate(ROOT_KEYSTORE_PATH, ROOT_KEYSTORE_PASSWORD, issuerAlias);
+            newCertificateChain = new Certificate[2];
             newCertificateChain[0] = rootCertificate;
+            newCertificateChain[1] = certificate;
         }
         else{
             System.arraycopy(certificatesChain, 0, newCertificateChain, 0, certificatesChain.length);
