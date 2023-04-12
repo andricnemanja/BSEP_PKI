@@ -20,6 +20,8 @@ public class OCSPObject {
     @Column(name = "revoked", unique = false)
     private Boolean revoked;
 
+    //@OneToMany
+    @ElementCollection
     @Column(name = "signedCertificates", unique = false)
     private Set<String> signedCertificates;
 
