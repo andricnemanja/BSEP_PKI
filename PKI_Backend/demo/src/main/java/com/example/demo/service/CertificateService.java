@@ -31,7 +31,6 @@ import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.cert.X509Extension;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -46,6 +45,9 @@ public class CertificateService {
     private UserService userService;
     @Autowired
     private CertificateRepository certificateRepository;
+
+    @Autowired
+    private OCSPService ocspService;
 
     public CertificateService() {
         Security.addProvider(new BouncyCastleProvider());
@@ -185,6 +187,8 @@ public class CertificateService {
                 certificate.getSerialNumber().toString()
         );
 
+        ocspService.addSignedCertificate(certificateParamsDTO.issuer, certificate.getSerialNumber().toString());
+
         // CUVANJE U BAZI
         userService.save(subjectUser);
         certificateRepository.save(new Certificate(
@@ -239,13 +243,35 @@ public class CertificateService {
         x500NameIssuer = issuerBuilder.build();
 
         // KREIRANJE SERTIFIKATA
+        X509Certificate certificate;
+
         Subject subject = new Subject(publicKeySubject, x500NameSubject);
         Issuer issuer = new Issuer(privateKeyIssuer, publicKeyIssuer, x500NameIssuer);
         Date startDate = certificateParamsDTO.notBefore;
-        Date endDate = DateUtils.addYears(startDate, 1);
+        Date endDate = DateUtils.addYears(startDate, 5);
 
-        return generateCertificate(subject, issuer, startDate, endDate, true,
+        certificate = generateCertificate(subject, issuer, startDate, endDate, true,
                 certificateParamsDTO.keyUsage, certificateParamsDTO.extendedKeyUsage);
+        subjectUser.getCertificatesSerialNumbers().add(
+                certificate.getSerialNumber().toString()
+        );
+
+        ocspService.addSignedCertificate(certificateParamsDTO.issuer, certificate.getSerialNumber().toString());
+
+        // CUVANJE U BAZI
+        userService.save(subjectUser);
+        certificateRepository.save(new Certificate(
+                certificate.getSerialNumber(),
+                subjectUser.getEmail(),
+                issuerUser.getEmail(),
+                startDate,
+                endDate,
+                certificateParamsDTO.keyUsage,
+                certificateParamsDTO.extendedKeyUsage,
+                false
+        ));
+
+        return certificate;
     }
 
     public X509Certificate generateCertificate(Subject subject, Issuer issuer, Date startDate, Date endDate, boolean isEndEntity,
