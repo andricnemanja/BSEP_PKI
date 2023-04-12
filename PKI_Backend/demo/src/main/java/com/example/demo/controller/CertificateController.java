@@ -5,6 +5,7 @@ import com.example.demo.model.Issuer;
 import com.example.demo.model.Subject;
 import com.example.demo.model.User;
 import com.example.demo.service.CertificateService;
+import com.example.demo.service.OCSPService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Utils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -18,12 +19,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +38,9 @@ public class CertificateController {
 
     @Autowired
     private CertificateService certificateService;
+
+    @Autowired
+    private OCSPService ocspService;
 
     @Autowired
     private Utils utils;
@@ -138,4 +144,32 @@ public class CertificateController {
     public ResponseEntity getAll() {
         return new ResponseEntity(HttpStatus.OK);
     }
+
+
+
+
+
+    @GetMapping("validation/{serialNumber}")
+    public ResponseEntity<?> checkIfValid(@PathVariable("serialNumber") String serialNumber){
+        boolean isValid = ocspService.isCertificateValid(serialNumber);
+        return new ResponseEntity<>((isValid), HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("isrevoked/{serialNumber}")
+    public ResponseEntity<?> checkIfRevoked(@PathVariable("serialNumber") String certificateSerialNum){
+        Set<String> revoked = ocspService.revokeCertificate(certificateSerialNum);
+        return new ResponseEntity<>((revoked), HttpStatus.OK);
+    }
+
+
+
+
+
+
+
+
+
+
 }

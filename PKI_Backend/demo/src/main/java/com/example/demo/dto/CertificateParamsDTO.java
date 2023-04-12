@@ -20,6 +20,38 @@ public class CertificateParamsDTO {
     public String password;
     public String role;
 
+
+    public Date startDate;
+    public Date endDate;
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+
+    public boolean Istekao(){
+        if(this.endDate.before(this.startDate))
+            return false;
+        else if(this.startDate==null || this.endDate==null || this.email.equals("") || this.email==null)
+            return false;
+        return true;
+    }
+
+
+
+
     public CertificateParamsDTO(String certificateType, Date notBefore, String issuer, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage, String commonName,
                                 String surname, String givenName, String organization, String organizationUnit, String country, String email, String password, String role) {
         this.certificateType = certificateType;
@@ -37,6 +69,7 @@ public class CertificateParamsDTO {
         this.password = password;
         this.role = role;
     }
+
 
     public CertificateParamsDTO() {}
 
