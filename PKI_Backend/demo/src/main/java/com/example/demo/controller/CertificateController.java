@@ -6,6 +6,7 @@ import com.example.demo.model.Certificate;
 import com.example.demo.model.User;
 import com.example.demo.service.CertificateService;
 import com.example.demo.service.KeyStoreService;
+import com.example.demo.service.OCSPService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class CertificateController {
 
     @Autowired
     private CertificateService certificateService;
+
+    @Autowired
+    private OCSPService ocspService;
 
     @Autowired
     private Utils utils;
@@ -140,4 +144,10 @@ public class CertificateController {
                     .body(("Error exporting certificate: " + e.getMessage()).getBytes());
         }
     }
+
+    @GetMapping("/revoke/{serialNumber}")
+    public ResponseEntity<?> revokeCertificate(@PathVariable String serialNumber) {
+        return (ResponseEntity<?>) ocspService.revokeCertificate(serialNumber);
+    }
+
 }

@@ -18,6 +18,8 @@
                 <p class="card-subtitle"><b>Key usage: </b>{{cert.keyUsage}}</p>
                 <p class="card-subtitle"><b>Extended key usage: </b>{{cert.extendedKeyUsage}}</p>
                 <button class="btn btn-primary" (click)="downloadCertificate(cert.serialNumber)">Download</button>
+
+                <button class="btn btn-primary" (click)="Revoke(cert.serialNumber)">Revoke</button>
             </div>
         </div>
     </div>
