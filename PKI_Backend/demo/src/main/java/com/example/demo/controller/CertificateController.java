@@ -98,8 +98,8 @@ public class CertificateController {
                 c.setCommonName(user.getCommonName());
                 c.setOrganization(user.getOrganization());
 
-            certificateDtos.add(c);
-            
+                certificateDtos.add(c);
+            }
         }
 
         return new ResponseEntity(certificateDtos, HttpStatus.OK);
