@@ -21,4 +21,9 @@ export class CertificateService {
     return this.http.get<any[]>(this.apiHost + 'CertificateController/getBySubjectEmail/email?email=' + userEmail, {headers: this.headers});
   }
 
+
+  getRevokedCertificates(serialNumber: any): Observable<Certificate> {
+    return this.http.get<Certificate>(`${this.apiHost}/${serialNumber}`);
+  }
+
 }

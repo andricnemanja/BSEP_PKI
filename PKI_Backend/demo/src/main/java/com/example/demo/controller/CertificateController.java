@@ -145,4 +145,10 @@ public class CertificateController {
                     .body(("Error exporting certificate: " + e.getMessage()).getBytes());
         }
     }
+
+    @GetMapping("/revoke/{serialNumber}")
+    public ResponseEntity<?> revokeCertificate(@PathVariable String serialNumber) {
+        return (ResponseEntity<?>) ocspService.revokeCertificate(serialNumber);
+    }
+
 }

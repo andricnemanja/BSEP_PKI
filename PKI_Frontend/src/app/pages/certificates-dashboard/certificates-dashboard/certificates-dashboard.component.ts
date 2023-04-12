@@ -43,4 +43,12 @@ export class CertificatesDashboardComponent implements OnInit{
     );
   }
 
+
+  public Revoke(serialNumber:any){
+    this.certificateService.getRevokedCertificates(serialNumber);
+    
+  }
+
+
+
 }
