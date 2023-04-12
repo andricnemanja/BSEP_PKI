@@ -80,7 +80,6 @@ public class CertificateController {
             c.setIssuerOrganization(issuer.getOrganization());
 
             certificateDtos.add(c);
-
         }
 
         return new ResponseEntity(certificateDtos, HttpStatus.OK);
@@ -92,11 +91,12 @@ public class CertificateController {
         ArrayList<CertificateDTO> certificateDtos = new ArrayList<>();
         for (Certificate certificate : certificateService.getAll()) {
 
-            User user = userService.findByEmail(certificate.getSubjectEmail());
+            if(!certificate.getRevoked()) {
+                User user = userService.findByEmail(certificate.getSubjectEmail());
 
-            CertificateDTO c = new CertificateDTO(certificate);
-            c.setCommonName(user.getCommonName());
-            c.setOrganization(user.getOrganization());
+                CertificateDTO c = new CertificateDTO(certificate);
+                c.setCommonName(user.getCommonName());
+                c.setOrganization(user.getOrganization());
 
             certificateDtos.add(c);
             

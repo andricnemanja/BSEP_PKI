@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.CertificateParamsDTO;
 import com.example.demo.model.*;
 import com.example.demo.repo.CertificateRepository;
+import com.example.demo.repo.OCSPRepo;
 import com.example.demo.utils.Utils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -28,10 +29,7 @@ import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CertificateService {
@@ -41,6 +39,9 @@ public class CertificateService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OCSPRepo ocspRepo;
     @Autowired
     private KeyStoreService keyStoreService;
     @Autowired
@@ -106,6 +107,9 @@ public class CertificateService {
                 certificateParamsDTO.extendedKeyUsage,
                 false
         ));
+
+        OCSPObject ocspObject = new OCSPObject(certificate.getSerialNumber().toString(), false, new HashSet<>());
+        ocspRepo.save(ocspObject);
 
         keyStoreService.saveRootCertificate(certificate.getSerialNumber().toString(), privateKeySubject, certificate);
 
@@ -183,6 +187,9 @@ public class CertificateService {
                 certificateParamsDTO.extendedKeyUsage,
                 false
         ));
+
+        OCSPObject ocspObject = new OCSPObject(certificate.getSerialNumber().toString(), false, new HashSet<>());
+        ocspRepo.save(ocspObject);
 
         keyStoreService.saveCertificate(certificate.getSerialNumber().toString(), privateKeySubject, certificate, certificateParamsDTO.issuer);
 
