@@ -70,7 +70,6 @@ export class IntermediaryFormComponent implements OnInit{
       country : this.country,
       email : this.email,
       password : this.password,
-      role : "user"
     }
 
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
