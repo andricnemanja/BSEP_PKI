@@ -13,10 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.KeyPairGenerator;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import org.springframework.http.HttpHeaders;
 
 @RestController
 @RequestMapping("/CertificateController")
@@ -100,5 +100,29 @@ public class CertificateController {
         }
 
         return new ResponseEntity(certificateDtos, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/export/{alias}")
+    public ResponseEntity<byte[]> downloadCertificate(@PathVariable String alias) {
+
+        try {
+            java.security.cert.Certificate cert = keyStoreService.getCertificate(alias);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(cert.getEncoded());
+            outputStream.close();
+            byte[] certBytes = outputStream.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", alias + ".cer");
+
+            return new ResponseEntity<>(certBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error exporting certificate: " + e.getMessage()).getBytes());
+        }
     }
 }
