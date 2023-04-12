@@ -42,6 +42,9 @@ public class OCSPService {
 
         certificateService.revokeCertificate(serialNumber); //TODO testirati
 
+        for(String sn: CACertificate.getSignedCertificates()){
+            revokeCertificate(sn);
+        }
         return CACertificate.getSignedCertificates();
     }
 
