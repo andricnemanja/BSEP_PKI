@@ -13,6 +13,8 @@ import java.util.Set;
 public class OCSPService {
     @Autowired
     private OCSPRepo ocspRepo;
+    @Autowired
+    private CertificateService certificateService;
 
 
     private CertificateParamsDTO certificateParamsDTO;
@@ -44,6 +46,8 @@ public class OCSPService {
         OCSPObject CACertificate = ocspRepo.findBySerialNumber(serialNumber);
         CACertificate.setRevoked(true);
         ocspRepo.save(CACertificate);
+
+        certificateService.revokeCertificate(serialNumber); //TODO testirati
 
         return CACertificate.getSignedCertificates();
     }

@@ -28,19 +28,24 @@ export class LoginComponent implements OnInit {
       this.credentialsDTO = res;
 
       localStorage.setItem('UserID', this.credentialsDTO.userID.toString());
+      localStorage.setItem('email', this.credentialsDTO.email.toString());
     });
   }
   onLogout() {
     this.logout().subscribe(res => {
+
       localStorage.removeItem('UserID');
+      localStorage.removeItem('email')
     });
   }
 
   // POZIVI FUNKCIJA U NOVOM FAJLU, ZA SAD NEK BUDU OVDE >>>
   login(loginData : LoginDTO) : Observable<any> {
+    
     return this.http.post<any>("http://localhost:8080/UserController/login", this.loginData)
   }
   logout() : Observable<any> {
+
     return this.http.post<any>("http://localhost:8080/UserController/logout", this.loginData)
   }
 }

@@ -18,7 +18,6 @@ public class CertificateParamsDTO {
     public String country;
     public String email;
     public String password;
-    public String role;
 
 
     public Date startDate;
@@ -53,7 +52,7 @@ public class CertificateParamsDTO {
 
 
     public CertificateParamsDTO(String certificateType, Date notBefore, String issuer, ArrayList<String> keyUsage, ArrayList<String> extendedKeyUsage, String commonName,
-                                String surname, String givenName, String organization, String organizationUnit, String country, String email, String password, String role) {
+                                String surname, String givenName, String organization, String organizationUnit, String country, String email, String password) {
         this.certificateType = certificateType;
         this.notBefore = notBefore;
         this.issuer = issuer;
@@ -67,7 +66,6 @@ public class CertificateParamsDTO {
         this.country = country;
         this.email = email;
         this.password = password;
-        this.role = role;
     }
 
 
@@ -175,13 +173,5 @@ public class CertificateParamsDTO {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }

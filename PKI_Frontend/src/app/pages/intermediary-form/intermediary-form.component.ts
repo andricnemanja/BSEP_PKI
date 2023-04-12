@@ -1,21 +1,17 @@
-import { Component, NgModule, OnInit } from '@angular/core';
-import { networkInterfaces } from 'os';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs/internal/Observable';
 import { CertificateParamsDTO } from 'src/app/DTOs/certificateParamsDTO';
-import { HttpClient, HttpErrorResponse, HttpParams, HttpStatusCode } from '@angular/common/http';
-import { runInThisContext } from 'vm';
-import { Observable, Subject } from 'rxjs';
-import { CertificateInfoDTO } from 'src/app/DTOs/certificateInfoDTO';
 
 @Component({
-  selector: 'app-admin-certificates',
-  templateUrl: './admin-certificates.component.html',
-  styleUrls: ['./admin-certificates.component.scss']
+  selector: 'app-intermediary-form',
+  templateUrl: './intermediary-form.component.html',
+  styleUrls: ['./intermediary-form.component.scss']
 })
-
-export class AdminCertificatesComponent implements OnInit{
-  public certificateType : String = "";
+export class IntermediaryFormComponent implements OnInit{
+  public certificateType : String = "intermediary";
   public notBefore: Date = new Date();
-  public issuer : String = "";
+  public issuer : String = ""; //da li ja vec ovde znam serialNumber CA?
   public keyUsage : Array<String> = [];
   public extendedKeyUsage: Array<String> = [];
   public commonName : String = "";
@@ -36,11 +32,8 @@ export class AdminCertificatesComponent implements OnInit{
 
   public certificateParams : CertificateParamsDTO = new CertificateParamsDTO();
 
-  public certificateInfoDTOs : Array<CertificateInfoDTO> = [];
-  public selectedSerialNumber : String = "";
-
   constructor(private http: HttpClient) {}
-  
+
   calculateDate() {
     const start = this.startDate + "T" + this.startTime;
     
@@ -66,7 +59,7 @@ export class AdminCertificatesComponent implements OnInit{
     this.certificateParams = {
       certificateType : this.certificateType,
       notBefore : this.notBefore,
-      issuer : this.selectedSerialNumber,
+      issuer : this.issuer,
       keyUsage : this.keyUsage,
       extendedKeyUsage : this.extendedKeyUsage,
       commonName : this.commonName,
@@ -76,32 +69,18 @@ export class AdminCertificatesComponent implements OnInit{
       organizationUnit : this.organizationUnit,
       country : this.country,
       email : this.email,
-      password : this.password
+      password : this.password,
     }
-    
+
     this.sendCertificateParams(this.certificateParams).subscribe(res => {
 
     });
     this.resetInputs();
-
   }
 
   sendCertificateParams(certificateParams : CertificateParamsDTO) : Observable<any> {
-    return this.http.post<any>("http://localhost:8080/CertificateController/generateCertificate", certificateParams)
+    return this.http.post<any>("", certificateParams)
   }
-
-  /*getCertificatesBySubjectEmail(subjectEmail : string){
-    
-    let queryParams = new HttpParams();
-    queryParams = queryParams.append("email", subjectEmail);
-
-    return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/email", { params: queryParams } )
-  }*/
-
-  getAllCertificates(){
-    return this.http.get<any>("http://localhost:8080/CertificateController/getBySubjectEmail/getAll")
-  }
-
 
   resetInputs() {
     this.certificateType = "";
@@ -123,20 +102,6 @@ export class AdminCertificatesComponent implements OnInit{
     this.emailProtection = false;
   }
 
-  ngOnInit(){
-    /* ZA ULOGOVANOG KORISNIKA NJEGOVI SERTIFIKATI KOJIMA MOZE DA POTPISUJE
-    let subjectEmail = localStorage.getItem("email");
-    if(subjectEmail){
-
-      this.getCertificatesBySubjectEmail(subjectEmail).subscribe(res => {
-        this.certificateInfoDTOs = res;
-      });
-    
-    }
-    */
-    this.getAllCertificates().subscribe(res => {
-      this.certificateInfoDTOs = res;
-    });
-  }
+  ngOnInit(): void {}
 
 }
