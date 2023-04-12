@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class OCSPService {
 
             do{
                 java.security.cert.Certificate certificate = keyStoreService.getCertificate(serialNumber);
-                if(!isRevoked(serialNumber)){
+                if(isRevoked(serialNumber)){
                     return false;
                 }
                 X509Certificate x509Cert = (X509Certificate)certificate;
@@ -86,7 +87,7 @@ public class OCSPService {
             }while(serialNumber != issuerSerialNumber);
         }
         catch (CertificateException e) {
-            throw new RuntimeException(e);
+            return false;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (SignatureException e) {

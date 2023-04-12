@@ -23,7 +23,7 @@ export class CertificateService {
 
 
   getRevokedCertificates(serialNumber: any): Observable<Certificate> {
-    return this.http.get<Certificate>(`${this.apiHost}/${serialNumber}`);
+    return this.http.get<Certificate>(`${this.apiHost}CertificateController/revoke/${serialNumber}`);
   }
 
 }

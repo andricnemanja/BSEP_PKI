@@ -108,7 +108,8 @@ public class CertificateController {
             X509Certificate currCert = (X509Certificate)check;
 
             if(!certificate.getRevoked() && currCert.getBasicConstraints() > -1 &&
-                    certificate.getEndDate().getYear() - certificate.getStartDate().getYear() > 1) {
+                    certificate.getEndDate().getYear() - certificate.getStartDate().getYear() > 1 &&
+                    ocspService.isValid(certificate.getSerialNumber().toString())) {
 
                 User user = userService.findByEmail(certificate.getSubjectEmail());
 
@@ -147,8 +148,9 @@ public class CertificateController {
     }
 
     @GetMapping("/revoke/{serialNumber}")
-    public ResponseEntity<?> revokeCertificate(@PathVariable String serialNumber) {
-        return (ResponseEntity<?>) ocspService.revokeCertificate(serialNumber);
+    public ResponseEntity revokeCertificate(@PathVariable String serialNumber) {
+        ocspService.revokeCertificate(serialNumber);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }
