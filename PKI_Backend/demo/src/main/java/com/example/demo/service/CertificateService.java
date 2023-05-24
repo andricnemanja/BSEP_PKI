@@ -108,7 +108,7 @@ public class CertificateService {
         userService.save(subjectUser);
         certificateRepository.save(new Certificate(
                 certificate.getSerialNumber(),
-                certificateParamsDTO.issuer,
+                certificate.getSerialNumber().toString(),
                 subjectUser.getEmail(),
                 subjectUser.getEmail(),
                 startDate,
@@ -346,6 +346,11 @@ public class CertificateService {
             }
 
             //********************************************************************************************************************
+
+            // Subject Alternate Name
+            GeneralName altName = new GeneralName(GeneralName.dNSName, "localhost");
+            GeneralNames subjectAltName = new GeneralNames(altName);
+            certGen.addExtension(X509Extensions.SubjectAlternativeName, false, subjectAltName);
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
